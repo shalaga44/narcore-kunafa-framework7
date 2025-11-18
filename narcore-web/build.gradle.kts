@@ -66,6 +66,14 @@ kotlin {
                 //Up-- needed for jsonwebtoken/sign to work
 
 
+                //Down-- needed for framework7 to work
+                implementation(npm("dom7", "^4.0.6"))
+                implementation(npm("framework7", "^8.3.4"))
+                implementation(npm("skeleton-elements", "^4.0.1"))
+                implementation(npm("swiper", "^12.0.3"))
+                //Up-- needed for framework7 to work
+
+
             }
         }
     }

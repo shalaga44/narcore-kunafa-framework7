@@ -30,8 +30,7 @@ config.plugins = (config.plugins || []).concat([
 
 
 //Down -- needed for jsonwebtoken/sign to work
-config.resolve = {
-  fallback: {
+config.resolve.fallback = Object.assign({}, config.resolve.fallback, {
     buffer: require.resolve('buffer'),
     crypto: require.resolve('crypto-browserify'),
     stream: require.resolve('stream-browserify'),
@@ -39,14 +38,17 @@ config.resolve = {
     vm: require.resolve('vm-browserify'),
     events: require.resolve('events/'),
     process: require.resolve('process/browser'),
-  },
-};
+    'process/browser': require.resolve('process/browser'),
+});
+config.resolve.alias = Object.assign({}, config.resolve.alias, {
+    'process/browser': require.resolve('process/browser.js'),
+});
 config.plugins = config.plugins || [];
 config.plugins.push(
-  new webpack.ProvidePlugin({
-    Buffer: ['buffer', 'Buffer'],
-    process: 'process/browser',
-  })
+    new webpack.ProvidePlugin({
+        Buffer: ['buffer', 'Buffer'],
+        process: 'process/browser',
+    })
 );
 //Up-- needed for jsonwebtoken/sign to work
 
