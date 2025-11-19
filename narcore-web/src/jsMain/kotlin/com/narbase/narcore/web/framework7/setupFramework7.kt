@@ -7,6 +7,7 @@ import com.narbase.kunafa.core.components.textView
 import com.narbase.kunafa.core.components.*
 import com.narbase.kunafa.core.css.*
 import com.narbase.kunafa.core.dimensions.*
+import com.narbase.kunafa.core.lifecycle.LifecycleObserver
 import com.narbase.kunafa.core.routing.link
 import com.narbase.narcore.web.common.models.Direction
 import com.narbase.narcore.web.storage.StorageManager
@@ -36,6 +37,18 @@ private val kunafaRouteConfigurationMap = mapOf(
         "kunafa-form-root",
         { FormComponent() }
     ),
+    "/tabs-static/".removeSuffix("/") to KunafaRoute(
+        "kunafa-tabs-static-root",
+        { TabsStaticComponent() }
+    ),
+    "/tabs-animated/".removeSuffix("/") to KunafaRoute(
+        "kunafa-tabs-animated-root",
+        { TabsAnimatedComponent() }
+    ),
+    "/tabs-swipeable/".removeSuffix("/") to KunafaRoute(
+        "kunafa-tabs-swipeable-root",
+        { TabsSwipeableComponent() }
+    ),
     "(.*)" to KunafaRoute(
         "kunafa-not-found-root",
         { NotFoundComponent() }
@@ -62,6 +75,7 @@ fun setupFramework7AppIndex() {
         view {
             id = "app"
             element.className = "app"
+
 
             view {
                 element.className = "panel panel-left panel-cover dark panel-init"
@@ -91,6 +105,7 @@ fun setupFramework7AppIndex() {
                 }
             }
 
+
             view {
                 element.className = "panel panel-right panel-reveal dark"
                 view {
@@ -119,12 +134,14 @@ fun setupFramework7AppIndex() {
                 }
             }
 
+
             view {
                 element.className = "view view-main view-init safe-areas"
 
                 view {
                     element.className = "page"
                     element.setAttribute("data-name", "home")
+
 
                     view {
                         element.className = "navbar navbar-large"
@@ -178,145 +195,216 @@ fun setupFramework7AppIndex() {
                         }
                     }
 
+
                     view {
-                        element.className = "toolbar toolbar-bottom"
+                        element.className = "toolbar tabbar toolbar-bottom"
                         view {
                             element.className = "toolbar-inner"
+
                             a {
-                                href = "#"
-                                element.className = "link"
-                                textView { text = "Left Link" }
+                                href = "#home-tab-main"
+                                element.className = "tab-link tab-link-active"
+                                textView { text = "Main" }
                             }
+
                             a {
-                                href = "#"
-                                element.className = "link"
-                                textView { text = "Right Link" }
+                                href = "#home-tab-extra"
+                                element.className = "tab-link"
+                                textView { text = "Extra" }
                             }
                         }
                     }
 
+
                     view {
-                        element.className = "page-content"
+                        element.className = "tabs"
+
 
                         view {
-                            element.className = "block"
-                            textView {
-                                text = "Here is your blank Framework7 app. Let's see what we have here."
+                            id = "home-tab-main"
+                            element.className = "page-content tab tab-active"
+
+                            view {
+                                element.className = "block"
+                                textView {
+                                    text = "Here is your blank Framework7 app. Let's see what we have here."
+                                }
                             }
-                        }
 
-                        view {
-                            element.className = "block-title"
-                            textView { text = "Navigation" }
-                        }
+                            view {
+                                element.className = "block-title"
+                                textView { text = "Navigation" }
+                            }
 
-                        view {
-                            element.className = "list list-strong inset list-dividers-ios"
-                            ul {
-                                a {
-                                    href = "/about/"
-                                    element.className = "item-content item-link"
-                                    view {
-                                        element.className = "item-inner"
+                            view {
+                                element.className = "list list-strong inset list-dividers-ios"
+                                ul {
+                                    a {
+                                        href = "/about/"
+                                        element.className = "item-content item-link"
                                         view {
-                                            element.className = "item-title"
-                                            textView { text = "About" }
+                                            element.className = "item-inner"
+                                            view {
+                                                element.className = "item-title"
+                                                textView { text = "About" }
+                                            }
+                                        }
+                                    }
+
+                                    a {
+                                        href = "/form/"
+                                        element.className = "item-content item-link"
+                                        view {
+                                            element.className = "item-inner"
+                                            view {
+                                                element.className = "item-title"
+                                                textView { text = "Form" }
+                                            }
                                         }
                                     }
                                 }
+                            }
+
+                            view {
+                                element.className = "block-title"
+                                textView { text = "Modals" }
+                            }
+
+                            view {
+                                element.className = "block grid grid-cols-2 grid-gap"
 
                                 a {
-                                    href = "/form/"
-                                    element.className = "item-content item-link"
-                                    view {
-                                        element.className = "item-inner"
+                                    href = "#"
+                                    element.className = "button button-fill popup-open"
+                                    element.setAttribute("data-popup", "#my-popup")
+                                    textView { text = "Popup" }
+                                }
+
+                                a {
+                                    href = "#"
+                                    element.className = "button button-fill login-screen-open"
+                                    element.setAttribute("data-login-screen", "#my-login-screen")
+                                    textView { text = "Login Screen" }
+                                }
+
+                                a {
+                                    href = "#"
+                                    element.className = "button button-fill sheet-open"
+                                    element.setAttribute("data-sheet", "#bottom-sheet-draggable")
+                                    textView { text = "Draggable Sheet" }
+                                }
+
+                                a {
+                                    href = "#"
+                                    element.className = "button button-fill sheet-open"
+                                    element.setAttribute("data-sheet", "#bottom-sheet-full")
+                                    textView { text = "Full Sheet" }
+                                }
+                            }
+
+                            view {
+                                element.className = "block-title"
+                                textView { text = "Panels" }
+                            }
+
+                            view {
+                                element.className = "block grid grid-cols-2 grid-gap"
+                                a {
+                                    href = "#"
+                                    element.className = "button button-fill panel-open"
+                                    element.setAttribute("data-panel", "left")
+                                    textView { text = "Left Panel" }
+                                }
+                                a {
+                                    href = "#"
+                                    element.className = "button button-fill panel-open"
+                                    element.setAttribute("data-panel", "right")
+                                    textView { text = "Right Panel" }
+                                }
+                            }
+
+                            view {
+                                element.className = "list list-strong inset list-dividers-ios links-list"
+                                ul {
+                                    a {
+                                        href = "/dynamic-route/blog/45/post/125/?foo=bar#about"
+                                        textView { text = "Dynamic (Component) Route" }
+                                    }
+                                    a {
+                                        href = "/load-something-that-doesnt-exist/"
+                                        textView { text = "Default Route (404)" }
+                                    }
+                                    a {
+                                        href = "/request-and-load/user/123456/"
+                                        textView { text = "Request Data & Load" }
+                                    }
+                                }
+                            }
+
+
+                            view {
+                                element.className = "block-title"
+                                textView { text = "Tabs Demos" }
+                            }
+
+                            view {
+                                element.className = "list list-strong inset list-dividers-ios links-list"
+                                ul {
+                                    a {
+                                        href = "/tabs-static/"
+                                        element.className = "item-content item-link"
                                         view {
-                                            element.className = "item-title"
-                                            textView { text = "Form" }
+                                            element.className = "item-inner"
+                                            view {
+                                                element.className = "item-title"
+                                                textView { text = "Static Tabs" }
+                                            }
+                                        }
+                                    }
+                                    a {
+                                        href = "/tabs-animated/"
+                                        element.className = "item-content item-link"
+                                        view {
+                                            element.className = "item-inner"
+                                            view {
+                                                element.className = "item-title"
+                                                textView { text = "Animated Tabs" }
+                                            }
+                                        }
+                                    }
+                                    a {
+                                        href = "/tabs-swipeable/"
+                                        element.className = "item-content item-link"
+                                        view {
+                                            element.className = "item-inner"
+                                            view {
+                                                element.className = "item-title"
+                                                textView { text = "Swipeable Tabs" }
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
 
-                        view {
-                            element.className = "block-title"
-                            textView { text = "Modals" }
-                        }
 
                         view {
-                            element.className = "block grid grid-cols-2 grid-gap"
+                            id = "home-tab-extra"
+                            element.className = "page-content tab"
 
-                            a {
-                                href = "#"
-                                element.className = "button button-fill popup-open"
-                                element.setAttribute("data-popup", "#my-popup")
-                                textView { text = "Popup" }
+                            view {
+                                element.className = "block-title"
+                                textView { text = "Extra Tab" }
                             }
-
-                            a {
-                                href = "#"
-                                element.className = "button button-fill login-screen-open"
-                                element.setAttribute("data-login-screen", "#my-login-screen")
-                                textView { text = "Login Screen" }
-                            }
-
-                            a {
-                                href = "#"
-                                element.className = "button button-fill sheet-open"
-                                element.setAttribute("data-sheet", "#bottom-sheet-draggable")
-                                textView { text = "Draggable Sheet" }
-                            }
-
-                            a {
-                                href = "#"
-                                element.className = "button button-fill sheet-open"
-                                element.setAttribute("data-sheet", "#bottom-sheet-full")
-                                textView { text = "Full Sheet" }
-                            }
-                        }
-
-                        view {
-                            element.className = "block-title"
-                            textView { text = "Panels" }
-                        }
-
-                        view {
-                            element.className = "block grid grid-cols-2 grid-gap"
-                            a {
-                                href = "#"
-                                element.className = "button button-fill panel-open"
-                                element.setAttribute("data-panel", "left")
-                                textView { text = "Left Panel" }
-                            }
-                            a {
-                                href = "#"
-                                element.className = "button button-fill panel-open"
-                                element.setAttribute("data-panel", "right")
-                                textView { text = "Right Panel" }
-                            }
-                        }
-
-                        view {
-                            element.className = "list list-strong inset list-dividers-ios links-list"
-                            ul {
-                                a {
-                                    href = "/dynamic-route/blog/45/post/125/?foo=bar#about"
-                                    textView { text = "Dynamic (Component) Route" }
-                                }
-                                a {
-                                    href = "/load-something-that-doesnt-exist/"
-                                    textView { text = "Default Route (404)" }
-                                }
-                                a {
-                                    href = "/request-and-load/user/123456/"
-                                    textView { text = "Request Data & Load" }
-                                }
+                            view {
+                                element.className = "block"
+                                textView { text = "Put any extra home content here." }
                             }
                         }
                     }
                 }
             }
+
 
             view {
                 id = "my-popup"
@@ -354,6 +442,7 @@ fun setupFramework7AppIndex() {
                     }
                 }
             }
+
 
             view {
                 id = "my-login-screen"
@@ -441,6 +530,8 @@ fun setupFramework7AppIndex() {
                     }
                 }
             }
+
+
             view {
                 id = "bottom-sheet-draggable"
                 element.className = "sheet-modal"
@@ -448,11 +539,9 @@ fun setupFramework7AppIndex() {
                 element.setAttribute("data-swipe-to-close", "true")
                 element.setAttribute("data-swipe-to-step", "true")
                 element.setAttribute("data-backdrop", "true")
-//                element.setAttribute("data-push", "true")
 
                 view {
                     element.className = "sheet-modal-inner"
-
 
                     view {
                         element.className = "swipe-handler"
@@ -466,7 +555,6 @@ fun setupFramework7AppIndex() {
                         }
                     }
 
-
                     view {
                         element.className = "page-content"
                         view {
@@ -476,6 +564,8 @@ fun setupFramework7AppIndex() {
                     }
                 }
             }
+
+
             view {
                 id = "bottom-sheet-full"
                 element.className = "sheet-modal"
@@ -514,10 +604,12 @@ fun setupFramework7AppIndex() {
     }
 
     val framework7Routes = arrayOf<F7Route>(
+
         objectOf {
             path = "/"
             pageName = "home"
         },
+
 
         objectOf {
             path = "/about"
@@ -531,6 +623,7 @@ fun setupFramework7AppIndex() {
             """.trimIndent()
         },
 
+
         objectOf {
             path = "/form"
             alias = arrayOf("/form/")
@@ -542,6 +635,34 @@ fun setupFramework7AppIndex() {
                 </div>
             """.trimIndent()
         },
+
+
+        objectOf {
+            path = "/tabs-static"
+            alias = arrayOf("/tabs-static/")
+            content = """
+            <div id="kunafa-tabs-static-root" class="page" data-name="tabs-static"></div>
+        """.trimIndent()
+        },
+
+
+        objectOf {
+            path = "/tabs-animated"
+            alias = arrayOf("/tabs-animated/")
+            content = """
+            <div id="kunafa-tabs-animated-root" class="page" data-name="tabs-animated"></div>
+        """.trimIndent()
+        },
+
+
+        objectOf {
+            path = "/tabs-swipeable"
+            alias = arrayOf("/tabs-swipeable/")
+            content = """
+            <div id="kunafa-tabs-swipeable-root" class="page" data-name="tabs-swipeable"></div>
+        """.trimIndent()
+        },
+
 
         objectOf {
             path = "/dynamic-route/blog/:blogId/post/:postId/"
@@ -590,6 +711,7 @@ fun setupFramework7AppIndex() {
                 }, 0)
             }
         },
+
 
         objectOf {
             path = "/request-and-load/user/:userId/"
@@ -1348,3 +1470,373 @@ class DynamicRouteComponent(
         }
     }
 }
+
+class TabsStaticComponent : Component() {
+
+    override fun View?.getView(): View {
+        return view {
+            element.className = "Page"
+            element.setAttribute("data-name", "tabs-static")
+
+
+            view {
+                element.className = "navbar"
+                view { element.className = "navbar-bg" }
+                view {
+                    element.className = "navbar-inner sliding"
+                    view {
+                        element.className = "title"
+                        textView { text = "Static Tabs" }
+                    }
+                }
+            }
+
+
+            view {
+                element.className = "toolbar toolbar-bottom tabbar"
+                view {
+                    element.className = "toolbar-inner"
+                    a {
+                        href = "#tab-1"
+                        element.className = "tab-link tab-link-active"
+                        textView { text = "Tab 1" }
+                    }
+                    a {
+                        href = "#tab-2"
+                        element.className = "tab-link"
+                        textView { text = "Tab 2" }
+                    }
+                    a {
+                        href = "#tab-3"
+                        element.className = "tab-link"
+                        textView { text = "Tab 3" }
+                    }
+                }
+            }
+
+            fun View.tabContent(title: String) {
+                element.className = "block"
+
+                textView { text = title }
+
+                textView {
+                    text =
+                        "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ullam enim quia molestiae facilis laudantium " +
+                                "voluptates obcaecati officia cum, sit libero commodi. Ratione illo suscipit temporibus sequi iure ad " +
+                                "laboriosam accusamus?"
+                }
+                textView {
+                    text =
+                        "Saepe explicabo voluptas ducimus provident, doloremque quo totam molestias! Suscipit blanditiis eaque " +
+                                "exercitationem praesentium reprehenderit, fuga accusamus possimus sed, sint facilis ratione quod, qui " +
+                                "dignissimos voluptas! Aliquam rerum consequuntur deleniti."
+                }
+                textView {
+                    text =
+                        "Totam reprehenderit amet commodi ipsum nam provident doloremque possimus odio itaque, est animi culpa modi " +
+                                "consequatur reiciendis corporis libero laudantium sed eveniet unde delectus a maiores nihil dolores? Natus, " +
+                                "perferendis."
+                }
+                textView {
+                    text =
+                        "Atque quis totam repellendus omnis alias magnam corrupti, possimus aspernatur perspiciatis quae provident " +
+                                "consequatur minima doloremque blanditiis nihil maxime ducimus earum autem. Magni animi blanditiis similique " +
+                                "iusto, repellat sed quisquam!"
+                }
+                textView {
+                    text =
+                        "Suscipit, facere quasi atque totam. Repudiandae facilis at optio atque, rem nam, natus ratione cum enim " +
+                                "voluptatem suscipit veniam! Repellat, est debitis. Modi nam mollitia explicabo, unde aliquid impedit! Adipisci!"
+                }
+                textView {
+                    text =
+                        "Deserunt adipisci tempora asperiores, quo, nisi ex delectus vitae consectetur iste fugiat iusto dolorem " +
+                                "autem. Itaque, ipsa voluptas, a assumenda rem, dolorum porro accusantium, officiis veniam nostrum cum cumque " +
+                                "impedit."
+                }
+                textView {
+                    text =
+                        "Laborum illum ipsa voluptatibus possimus nesciunt ex consequatur rem, natus ad praesentium rerum libero " +
+                                "consectetur temporibus cupiditate atque aspernatur, eaque provident eligendi quaerat ea soluta doloremque. " +
+                                "Iure fugit, minima facere."
+                }
+            }
+
+
+            view {
+                element.className = "tabs"
+
+
+                view {
+                    id = "tab-1"
+                    element.className = "page-content tab tab-active"
+                    view {
+                        tabContent("Tab 1 content")
+                    }
+                }
+
+
+                view {
+                    id = "tab-2"
+                    element.className = "page-content tab"
+                    view {
+                        tabContent("Tab 2 content")
+                    }
+                }
+
+
+                view {
+                    id = "tab-3"
+                    element.className = "page-content tab"
+                    view {
+                        tabContent("Tab 3 content")
+                    }
+                }
+            }
+        }
+    }
+}
+
+class TabsAnimatedComponent : Component() {
+
+    override fun View?.getView(): View {
+        return view {
+            element.className = "Page"
+            element.setAttribute("data-name", "tabs-animated")
+
+
+            view {
+                element.className = "navbar"
+                view { element.className = "navbar-bg" }
+                view {
+                    element.className = "navbar-inner sliding"
+                    view {
+                        element.className = "title"
+                        textView { text = "Animated Tabs" }
+                    }
+                }
+            }
+
+
+            view {
+                element.className = "toolbar toolbar-bottom tabbar"
+                view {
+                    element.className = "toolbar-inner"
+                    a {
+                        href = "#tab-1"
+                        element.className = "tab-link tab-link-active"
+                        textView { text = "Tab 1" }
+                    }
+                    a {
+                        href = "#tab-2"
+                        element.className = "tab-link"
+                        textView { text = "Tab 2" }
+                    }
+                    a {
+                        href = "#tab-3"
+                        element.className = "tab-link"
+                        textView { text = "Tab 3" }
+                    }
+                }
+            }
+
+            fun View.tabContent(title: String) {
+                element.className = "block"
+
+                textView { text = title }
+
+                textView {
+                    text =
+                        "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ullam enim quia molestiae facilis laudantium " +
+                                "voluptates obcaecati officia cum, sit libero commodi. Ratione illo suscipit temporibus sequi iure ad " +
+                                "laboriosam accusamus?"
+                }
+                textView {
+                    text =
+                        "Saepe explicabo voluptas ducimus provident, doloremque quo totam molestias! Suscipit blanditiis eaque " +
+                                "exercitationem praesentium reprehenderit, fuga accusamus possimus sed, sint facilis ratione quod, qui " +
+                                "dignissimos voluptas! Aliquam rerum consequuntur deleniti."
+                }
+                textView {
+                    text =
+                        "Totam reprehenderit amet commodi ipsum nam provident doloremque possimus odio itaque, est animi culpa modi " +
+                                "consequatur reiciendis corporis libero laudantium sed eveniet unde delectus a maiores nihil dolores? Natus, " +
+                                "perferendis."
+                }
+                textView {
+                    text =
+                        "Atque quis totam repellendus omnis alias magnam corrupti, possimus aspernatur perspiciatis quae provident " +
+                                "consequatur minima doloremque blanditiis nihil maxime ducimus earum autem. Magni animi blanditiis similique " +
+                                "iusto, repellat sed quisquam!"
+                }
+                textView {
+                    text =
+                        "Suscipit, facere quasi atque totam. Repudiandae facilis at optio atque, rem nam, natus ratione cum enim " +
+                                "voluptatem suscipit veniam! Repellat, est debitis. Modi nam mollitia explicabo, unde aliquid impedit! Adipisci!"
+                }
+                textView {
+                    text =
+                        "Deserunt adipisci tempora asperiores, quo, nisi ex delectus vitae consectetur iste fugiat iusto dolorem " +
+                                "autem. Itaque, ipsa voluptas, a assumenda rem, dolorum porro accusantium, officiis veniam nostrum cum cumque " +
+                                "impedit."
+                }
+                textView {
+                    text =
+                        "Laborum illum ipsa voluptatibus possimus nesciunt ex consequatur rem, natus ad praesentium rerum libero " +
+                                "consectetur temporibus cupiditate atque aspernatur, eaque provident eligendi quaerat ea soluta doloremque. " +
+                                "Iure fugit, minima facere."
+                }
+            }
+
+
+            view {
+                element.className = "tabs-animated-wrap"
+
+                view {
+                    element.className = "tabs"
+
+
+                    view {
+                        id = "tab-1"
+                        element.className = "page-content tab tab-active"
+                        view {
+                            tabContent("Tab 1 content")
+                        }
+                    }
+
+
+                    view {
+                        id = "tab-2"
+                        element.className = "page-content tab"
+                        view {
+                            tabContent("Tab 2 content")
+                        }
+                    }
+
+
+                    view {
+                        id = "tab-3"
+                        element.className = "page-content tab"
+                        view {
+                            tabContent("Tab 3 content")
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+class TabsSwipeableComponent : Component() {
+
+    override fun View?.getView(): View {
+
+        return view {
+            element.className = "Page"
+            element.setAttribute("data-name", "tabs-swipeable")
+            view {
+                element.className = "navbar"
+                view { element.className = "navbar-bg" }
+                view {
+                    element.className = "navbar-inner sliding"
+                    view {
+                        element.className = "title"
+                        textView { text = "Swipeable Tabs" }
+                    }
+                }
+            }
+            view {
+                element.className = "toolbar toolbar-bottom tabbar"
+                view {
+                    element.className = "toolbar-inner"
+                    a {
+                        href = "#tab-1"
+                        element.className = "tab-link tab-link-active"
+                        textView { text = "Tab 1" }
+                    }
+                    a {
+                        href = "#tab-2"
+                        element.className = "tab-link"
+                        textView { text = "Tab 2" }
+                    }
+                    a {
+                        href = "#tab-3"
+                        element.className = "tab-link"
+                        textView { text = "Tab 3" }
+                    }
+                }
+            }
+            fun View.addSlide(id: String, title: String, isActive: Boolean) = swiperSlide {
+                this.id = id
+                element.className = buildString {
+                    append("page-content tab")
+                    if (isActive) append(" tab-active")
+                }
+                view {
+                    element.className = "block"
+
+                    textView { text = title }
+
+                    textView {
+                        text =
+                            "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ullam enim quia molestiae facilis laudantium " +
+                                    "voluptates obcaecati officia cum, sit libero commodi. Ratione illo suscipit temporibus sequi iure ad " +
+                                    "laboriosam accusamus?"
+                    }
+                    textView {
+                        text =
+                            "Saepe explicabo voluptas ducimus provident, doloremque quo totam molestias! Suscipit blanditiis eaque " +
+                                    "exercitationem praesentium reprehenderit, fuga accusamus possimus sed, sint facilis ratione quod, qui " +
+                                    "dignissimos voluptas! Aliquam rerum consequuntur deleniti."
+                    }
+                    textView {
+                        text =
+                            "Totam reprehenderit amet commodi ipsum nam provident doloremque possimus odio itaque, est animi culpa modi " +
+                                    "consequatur reiciendis corporis libero laudantium sed eveniet unde delectus a maiores nihil dolores? Natus, " +
+                                    "perferendis."
+                    }
+                    textView {
+                        text =
+                            "Atque quis totam repellendus omnis alias magnam corrupti, possimus aspernatur perspiciatis quae provident " +
+                                    "consequatur minima doloremque blanditiis nihil maxime ducimus earum autem. Magni animi blanditiis similique " +
+                                    "iusto, repellat sed quisquam!"
+                    }
+                    textView {
+                        text =
+                            "Suscipit, facere quasi atque totam. Repudiandae facilis at optio atque, rem nam, natus ratione cum enim " +
+                                    "voluptatem suscipit veniam! Repellat, est debitis. Modi nam mollitia explicabo, unde aliquid impedit! Adipisci!"
+                    }
+                    textView {
+                        text =
+                            "Deserunt adipisci tempora asperiores, quo, nisi ex delectus vitae consectetur iste fugiat iusto dolorem " +
+                                    "autem. Itaque, ipsa voluptas, a assumenda rem, dolorum porro accusantium, officiis veniam nostrum cum cumque " +
+                                    "impedit."
+                    }
+                    textView {
+                        text =
+                            "Laborum illum ipsa voluptatibus possimus nesciunt ex consequatur rem, natus ad praesentium rerum libero " +
+                                    "consectetur temporibus cupiditate atque aspernatur, eaque provident eligendi quaerat ea soluta doloremque. " +
+                                    "Iure fugit, minima facere."
+                    }
+                }
+
+            }
+
+            swiperContainer {
+                element.className = "tabs"
+                addSlide("tab-1", "Tab 1 content", isActive = true)
+                addSlide("tab-2", "Tab 2 content", isActive = false)
+                addSlide("tab-3", "Tab 3 content", isActive = false)
+            }
+
+        }
+
+
+    }
+}
+
+fun View?.swiperContainer(lifecycleObserver: LifecycleObserver? = null, block: CustomView.() -> Unit = {}) =
+    CustomView(this, "swiper-container").visit(lifecycleObserver, block)
+
+fun View?.swiperSlide(lifecycleObserver: LifecycleObserver? = null, block: CustomView.() -> Unit = {}) =
+    CustomView(this, "swiper-slide").visit(lifecycleObserver, block)
