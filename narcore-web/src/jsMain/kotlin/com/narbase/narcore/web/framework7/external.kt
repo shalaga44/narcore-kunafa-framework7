@@ -1,4 +1,4 @@
-@file:JsModule("js/f7-wrapper.js")
+@file:JsModule("./js/f7-wrapper.js")
 @file:JsNonModule
 package external.framework7
 import external.framework7.dom7.Dom7

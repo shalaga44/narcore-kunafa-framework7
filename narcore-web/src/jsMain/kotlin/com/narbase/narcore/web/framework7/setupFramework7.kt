@@ -246,17 +246,33 @@ fun setupFramework7AppIndex() {
 
                         view {
                             element.className = "block grid grid-cols-2 grid-gap"
+
                             a {
                                 href = "#"
                                 element.className = "button button-fill popup-open"
                                 element.setAttribute("data-popup", "#my-popup")
                                 textView { text = "Popup" }
                             }
+
                             a {
                                 href = "#"
                                 element.className = "button button-fill login-screen-open"
                                 element.setAttribute("data-login-screen", "#my-login-screen")
                                 textView { text = "Login Screen" }
+                            }
+
+                            a {
+                                href = "#"
+                                element.className = "button button-fill sheet-open"
+                                element.setAttribute("data-sheet", "#bottom-sheet-draggable")
+                                textView { text = "Draggable Sheet" }
+                            }
+
+                            a {
+                                href = "#"
+                                element.className = "button button-fill sheet-open"
+                                element.setAttribute("data-sheet", "#bottom-sheet-full")
+                                textView { text = "Full Sheet" }
                             }
                         }
 
@@ -421,6 +437,73 @@ fun setupFramework7AppIndex() {
                                     }
                                 }
                             }
+                        }
+                    }
+                }
+            }
+            view {
+                id = "bottom-sheet-draggable"
+                element.className = "sheet-modal"
+                element.setAttribute("style", "height:auto")
+                element.setAttribute("data-swipe-to-close", "true")
+                element.setAttribute("data-swipe-to-step", "true")
+                element.setAttribute("data-backdrop", "true")
+//                element.setAttribute("data-push", "true")
+
+                view {
+                    element.className = "sheet-modal-inner"
+
+
+                    view {
+                        element.className = "swipe-handler"
+                    }
+
+                    view {
+                        element.className = "sheet-modal-swipe-step"
+                        view {
+                            element.className = "block"
+                            textView { text = "Swipe up for more details" }
+                        }
+                    }
+
+
+                    view {
+                        element.className = "page-content"
+                        view {
+                            element.className = "block"
+                            textView { text = "More draggable bottom sheet content..." }
+                        }
+                    }
+                }
+            }
+            view {
+                id = "bottom-sheet-full"
+                element.className = "sheet-modal"
+                view {
+                    element.className = "toolbar"
+                    view {
+                        element.className = "toolbar-inner"
+                        view {
+                            element.className = "left"
+                            textView { text = "Full Sheet" }
+                        }
+                        view {
+                            element.className = "right"
+                            a {
+                                href = "#"
+                                element.className = "link sheet-close"
+                                textView { text = "Close" }
+                            }
+                        }
+                    }
+                }
+                view {
+                    element.className = "sheet-modal-inner"
+                    view {
+                        element.className = "page-content"
+                        view {
+                            element.className = "block"
+                            textView { text = "Full sheet content. Opens to its content height." }
                         }
                     }
                 }
