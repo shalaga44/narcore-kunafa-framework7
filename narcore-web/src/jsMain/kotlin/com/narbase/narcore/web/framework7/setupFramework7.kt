@@ -720,13 +720,17 @@ fun setupFramework7AppIndex() {
         el = "#app"
         name = "Narcore-Kunafa"
         this.routes = framework7Routes
+        view = objectOf {
+            browserHistory = true
+        }
     }
 
     val framework7AppInstance = Framework7(framework7InitializationParameters).asDynamic()
-    val mainFramework7View = framework7AppInstance.views.create(".view-main", objectOf<dynamic> {
+    val mainFramework7View = framework7AppInstance.views.create(".view-main", objectOf {
         main = true
         animate = true
-        url = "/"
+//        url = "/"
+        browserHistory = true
     })
 
     Framework7Navigation.framework7AppInstance = framework7AppInstance
