@@ -5,7 +5,7 @@ import external.framework7.dom7.Dom7
 
 
 @JsName("default")
-open external class Framework7(params: dynamic = definedExternally)
+open external class Framework7(params: Framework7Params = definedExternally):Framework7MainClass
 external fun createStore(params: dynamic): dynamic
 external val Dom7: Dom7
 

@@ -10,9 +10,12 @@ import com.narbase.kunafa.core.dimensions.*
 import com.narbase.kunafa.core.lifecycle.LifecycleObserver
 import com.narbase.kunafa.core.routing.link
 import com.narbase.narcore.web.common.models.Direction
+import com.narbase.narcore.web.framework7.Framework7Instance.router
 import com.narbase.narcore.web.storage.StorageManager
 import external.framework7.F7Route
 import external.framework7.Framework7
+import external.framework7.Framework7Params
+import external.framework7.Router.Router
 import external.framework7.component1
 import external.framework7.component2
 import external.framework7.component3
@@ -105,7 +108,7 @@ fun setupFramework7AppIndex() {
             }
 
             view {
-                element.className = "view view-main view-init safe-areas"
+                element.className = "view view-main safe-areas"
 
                 view {
                     element.className = "page"
@@ -452,8 +455,8 @@ fun setupFramework7AppIndex() {
                                             element.className = "item-link list-button login-button"
                                             textView { text = "Sign In" }
                                             onClick = {
-                                                Framework7Navigation.framework7AppInstance.loginScreen.close("#my-login-screen")
-                                                Framework7Navigation.framework7AppInstance.dialog.alert("hello world?")
+                                                Framework7Instance.app.asDynamic().loginScreen.close("#my-login-screen")
+                                                Framework7Instance.app.dialog.alert("hello world?")
                                             }
                                         }
                                     }
@@ -540,12 +543,10 @@ fun setupFramework7AppIndex() {
     }
 
     val framework7Routes = arrayOf<F7Route>(
-
         objectOf {
             path = "/"
             pageName = "home"
         },
-
         objectOf {
             path = "/about"
             alias = arrayOf("/about/")
@@ -553,7 +554,6 @@ fun setupFramework7AppIndex() {
                 <div id="kunafa-about-root" class="page"></div>
             """.trimIndent()
         },
-
         objectOf {
             path = "/form"
             alias = arrayOf("/form/")
@@ -561,7 +561,6 @@ fun setupFramework7AppIndex() {
                 <div id="kunafa-form-root" class="page"></div>
             """.trimIndent()
         },
-
         objectOf {
             path = "/tabs-static"
             alias = arrayOf("/tabs-static/")
@@ -569,7 +568,6 @@ fun setupFramework7AppIndex() {
             <div id="kunafa-tabs-static-root" class="page"></div>
         """.trimIndent()
         },
-
         objectOf {
             path = "/tabs-animated"
             alias = arrayOf("/tabs-animated/")
@@ -577,7 +575,6 @@ fun setupFramework7AppIndex() {
             <div id="kunafa-tabs-animated-root" class="page"></div>
         """.trimIndent()
         },
-
         objectOf {
             val route = TabsSwipeableComponent.route
             path = route.relativePath
@@ -586,7 +583,6 @@ fun setupFramework7AppIndex() {
             <div id="${TabsSwipeableComponent.route.rootElementId}" class="page"></div>
         """.trimIndent()
         },
-
         objectOf {
             path = "/dynamic-route/blog/:blogId/post/:postId/"
             async = { (framework7Router, targetRoute, previousRoute, resolveRoute, rejectRoute) ->
@@ -634,7 +630,6 @@ fun setupFramework7AppIndex() {
                 }, 0)
             }
         },
-
         objectOf {
             path = "/request-and-load/user/:userId/"
             async = { (framework7Router, targetRoute, previousRoute, resolveRoute, rejectRoute) ->
@@ -707,7 +702,6 @@ fun setupFramework7AppIndex() {
                 }, 1000)
             }
         },
-
         objectOf {
             path = "(.*)"
             content = """
@@ -716,30 +710,37 @@ fun setupFramework7AppIndex() {
         }
     )
 
-    val framework7InitializationParameters = objectOf<dynamic> {
+    val framework7InitializationParameters = objectOf<Framework7Params> {
         el = "#app"
         name = "Narcore-Kunafa"
         this.routes = framework7Routes
         view = objectOf {
             browserHistory = true
         }
+        theme = "auto"
+        colors = objectOf {
+            primary = "#ED1479"
+        }
     }
 
-    val framework7AppInstance = Framework7(framework7InitializationParameters).asDynamic()
-    val mainFramework7View = framework7AppInstance.views.create(".view-main", objectOf {
+
+
+    val framework7AppInstance = Framework7(framework7InitializationParameters)
+    val mainFramework7View = framework7AppInstance.asDynamic().views.create(".view-main", objectOf {
         main = true
         animate = true
-//        url = "/"
+        stackPages = true
         browserHistory = true
+        browserHistorySeparator = "#!/"
     })
 
-    Framework7Navigation.framework7AppInstance = framework7AppInstance
-    Framework7Navigation.mainFramework7View = mainFramework7View
+    Framework7Instance.app = framework7AppInstance
+    Framework7Instance.mainFramework7View = mainFramework7View
 }
-
-object Framework7Navigation {
-    var framework7AppInstance: dynamic = null
+object Framework7Instance {
+    lateinit var app: Framework7
     var mainFramework7View: dynamic = null
+    val router: Router  get() = mainFramework7View.router
 }
 
 fun View.setupPageInitKunafaMounts() {
@@ -750,11 +751,14 @@ fun View.setupPageInitKunafaMounts() {
 
         val matchedKunafaRouteConfiguration =
             kunafaRouteConfigurationMap[framework7RoutePath.removeSuffix("/")]
-                ?: KunafaRoute(
-                    "kunafa-not-found-root",
-                    { pageRoot -> NotFoundComponent(pageRoot) }
-                )
+                ?: run{
+                    console.error("setupPageInitKunafaMounts: '$framework7RoutePath' not found",domEvent )
+                    KunafaRoute(
+                        "kunafa-not-found-root",
+                        { pageRoot -> NotFoundComponent(pageRoot) }
+                    )
 
+                }
         val kunafaRootElement =
             document.getElementById(matchedKunafaRouteConfiguration.rootElementId) as HTMLElement?
         if (kunafaRootElement != null) {
@@ -768,8 +772,6 @@ fun View.setupPageInitKunafaMounts() {
 
     document.addEventListener("page:init", pageLifecycleEventHandler)
 }
-
-
 
 fun View.backLink() {
     val BACK_LINK_HTML = """
@@ -785,6 +787,39 @@ fun View.backLink() {
     }
 }
 
+/*
+fun View.backLink() {
+    val BACK_LINK_HTML = """
+    <i class="icon icon-back"></i>
+    <span class="if-not-md">Back</span>
+""".trimIndent()
+
+    a {
+        href = "#"
+        element.className = "link back"
+        onClick = onClick@{ event ->
+            event.preventDefault()
+
+            val router = Framework7Navigation.router
+            val history = (router.history)
+            println("history = ${history}")
+            if (history.size <= 1) {
+                router.navigate("/", objectOf {
+                    clearPreviousHistory = true
+                })
+            } else {
+
+                val back = router.back()
+                console.log("router.back = ",back)
+
+            }
+        }
+        view {
+            element.innerHTML = BACK_LINK_HTML
+        }
+    }
+}
+*/
 fun View.f7Navbar(
     title: String,
     back: Boolean = false,
@@ -1671,9 +1706,12 @@ class TabsSwipeableComponent(pageRoot: View) : F7PageComponent(pageRoot) {
                 element.className = "block"
 
                 textView { text = title }
+
                 a {
-                    href = "/dynamic-route/blog/45/post/125/?foo=bar#about"
-                    textView { text = "Dynamic (Component) Route" }
+                    textView { text = "About" }
+                    onClick = {
+                        router.navigate("/about")
+                    }
                 }
 
                 textView {
