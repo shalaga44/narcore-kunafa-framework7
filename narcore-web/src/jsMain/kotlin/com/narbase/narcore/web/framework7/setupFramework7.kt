@@ -25,33 +25,29 @@ import org.w3c.dom.events.Event
 
 data class KunafaRoute(
     val rootElementId: String,
-    val componentFactory: () -> Component
+    val componentFactory: (pageRoot: View) -> Component
 )
 
 private val kunafaRouteConfigurationMap = mapOf(
     "/about/".removeSuffix("/") to KunafaRoute(
         "kunafa-about-root",
-        { AboutComponent() }
+        { pageRoot -> AboutComponent(pageRoot) }
     ),
     "/form/".removeSuffix("/") to KunafaRoute(
         "kunafa-form-root",
-        { FormComponent() }
+        { pageRoot -> FormComponent(pageRoot) }
     ),
     "/tabs-static/".removeSuffix("/") to KunafaRoute(
         "kunafa-tabs-static-root",
-        { TabsStaticComponent() }
+        { pageRoot -> TabsStaticComponent(pageRoot) }
     ),
     "/tabs-animated/".removeSuffix("/") to KunafaRoute(
         "kunafa-tabs-animated-root",
-        { TabsAnimatedComponent() }
+        { pageRoot -> TabsAnimatedComponent(pageRoot) }
     ),
-    "/tabs-swipeable/".removeSuffix("/") to KunafaRoute(
-        "kunafa-tabs-swipeable-root",
-        { TabsSwipeableComponent() }
-    ),
-    "(.*)" to KunafaRoute(
-        "kunafa-not-found-root",
-        { NotFoundComponent() }
+    TabsSwipeableComponent.route.relativePath.removeSuffix("/") to KunafaRoute(
+        TabsSwipeableComponent.route.rootElementId,
+        { pageRoot -> TabsSwipeableComponent(pageRoot) }
     )
 )
 
@@ -76,64 +72,37 @@ fun setupFramework7AppIndex() {
             id = "app"
             element.className = "app"
 
-
             view {
                 element.className = "panel panel-left panel-cover dark panel-init"
                 view {
                     element.className = "view"
-                    view {
-                        element.className = "page"
-                        view {
-                            element.className = "navbar"
-                            view { element.className = "navbar-bg" }
-                            view {
-                                element.className = "navbar-inner"
-                                view {
-                                    element.className = "title"
-                                    textView { text = "Left Panel" }
-                                }
-                            }
-                        }
-                        view {
-                            element.className = "page-content"
+                    f7Page(
+                        title = "Left Panel",
+                        content = {
                             view {
                                 element.className = "block"
                                 textView { text = "Left panel content goes here" }
                             }
-                        }
-                    }
+                        },
+                    )
                 }
             }
-
 
             view {
                 element.className = "panel panel-right panel-reveal dark"
                 view {
                     element.className = "view"
-                    view {
-                        element.className = "page"
-                        view {
-                            element.className = "navbar"
-                            view { element.className = "navbar-bg" }
-                            view {
-                                element.className = "navbar-inner"
-                                view {
-                                    element.className = "title"
-                                    textView { text = "Right Panel" }
-                                }
-                            }
-                        }
-                        view {
-                            element.className = "page-content"
+                    f7Page(
+                        title = "Right Panel",
+                        content = {
                             view {
                                 element.className = "block"
                                 textView { text = "Right panel content goes here" }
                             }
-                        }
-                    }
+                        },
+                    )
                 }
             }
-
 
             view {
                 element.className = "view view-main view-init safe-areas"
@@ -141,7 +110,6 @@ fun setupFramework7AppIndex() {
                 view {
                     element.className = "page"
                     element.setAttribute("data-name", "home")
-
 
                     view {
                         element.className = "navbar navbar-large"
@@ -195,7 +163,6 @@ fun setupFramework7AppIndex() {
                         }
                     }
 
-
                     view {
                         element.className = "toolbar tabbar toolbar-bottom"
                         view {
@@ -215,10 +182,8 @@ fun setupFramework7AppIndex() {
                         }
                     }
 
-
                     view {
                         element.className = "tabs"
-
 
                         view {
                             id = "home-tab-main"
@@ -341,7 +306,6 @@ fun setupFramework7AppIndex() {
                                 }
                             }
 
-
                             view {
                                 element.className = "block-title"
                                 textView { text = "Tabs Demos" }
@@ -387,7 +351,6 @@ fun setupFramework7AppIndex() {
                             }
                         }
 
-
                         view {
                             id = "home-tab-extra"
                             element.className = "page-content tab"
@@ -405,53 +368,30 @@ fun setupFramework7AppIndex() {
                 }
             }
 
-
             view {
                 id = "my-popup"
                 element.className = "popup"
                 view {
                     element.className = "view"
-                    view {
-                        element.className = "page"
-                        view {
-                            element.className = "navbar"
-                            view { element.className = "navbar-bg" }
-                            view {
-                                element.className = "navbar-inner"
-                                view {
-                                    element.className = "title"
-                                    textView { text = "Popup" }
-                                }
-                                view {
-                                    element.className = "right"
-                                    a {
-                                        href = "#"
-                                        element.className = "link popup-close"
-                                        textView { text = "Close" }
-                                    }
-                                }
-                            }
-                        }
-                        view {
-                            element.className = "page-content"
+                    f7Page(
+                        title = "Popup",
+                        content = {
                             view {
                                 element.className = "block"
                                 textView { text = "Popup content goes here." }
                             }
-                        }
-                    }
+                        },
+                    )
                 }
             }
-
 
             view {
                 id = "my-login-screen"
                 element.className = "login-screen"
                 view {
                     element.className = "view"
-                    view {
-                        element.className = "page"
-                        view {
+                    f7Page(
+                        content = {
                             element.className = "page-content login-screen-content"
 
                             view {
@@ -526,11 +466,10 @@ fun setupFramework7AppIndex() {
                                     }
                                 }
                             }
-                        }
-                    }
+                        },
+                    )
                 }
             }
-
 
             view {
                 id = "bottom-sheet-draggable"
@@ -555,8 +494,7 @@ fun setupFramework7AppIndex() {
                         }
                     }
 
-                    view {
-                        element.className = "page-content"
+                    pageContent {
                         view {
                             element.className = "block"
                             textView { text = "More draggable bottom sheet content..." }
@@ -564,7 +502,6 @@ fun setupFramework7AppIndex() {
                     }
                 }
             }
-
 
             view {
                 id = "bottom-sheet-full"
@@ -589,8 +526,7 @@ fun setupFramework7AppIndex() {
                 }
                 view {
                     element.className = "sheet-modal-inner"
-                    view {
-                        element.className = "page-content"
+                    pageContent {
                         view {
                             element.className = "block"
                             textView { text = "Full sheet content. Opens to its content height." }
@@ -610,59 +546,46 @@ fun setupFramework7AppIndex() {
             pageName = "home"
         },
 
-
         objectOf {
             path = "/about"
             alias = arrayOf("/about/")
             content = """
-                <div class="page" data-name="about">
-                  <div class="page-content">
-                    <div id="kunafa-about-root" class="kunafa-page-root"></div>
-                  </div>
-                </div>
+                <div id="kunafa-about-root" class="page"></div>
             """.trimIndent()
         },
-
 
         objectOf {
             path = "/form"
             alias = arrayOf("/form/")
             content = """
-                <div class="page" data-name="form">
-                  <div class="page-content">
-                    <div id="kunafa-form-root" class="kunafa-page-root"></div>
-                  </div>
-                </div>
+                <div id="kunafa-form-root" class="page"></div>
             """.trimIndent()
         },
-
 
         objectOf {
             path = "/tabs-static"
             alias = arrayOf("/tabs-static/")
             content = """
-            <div id="kunafa-tabs-static-root" class="page" data-name="tabs-static"></div>
+            <div id="kunafa-tabs-static-root" class="page"></div>
         """.trimIndent()
         },
-
 
         objectOf {
             path = "/tabs-animated"
             alias = arrayOf("/tabs-animated/")
             content = """
-            <div id="kunafa-tabs-animated-root" class="page" data-name="tabs-animated"></div>
+            <div id="kunafa-tabs-animated-root" class="page"></div>
         """.trimIndent()
         },
-
 
         objectOf {
-            path = "/tabs-swipeable"
-            alias = arrayOf("/tabs-swipeable/")
+            val route = TabsSwipeableComponent.route
+            path = route.relativePath
+            alias = arrayOf("${route.relativePath}/")
             content = """
-            <div id="kunafa-tabs-swipeable-root" class="page" data-name="tabs-swipeable"></div>
+            <div id="${TabsSwipeableComponent.route.rootElementId}" class="page"></div>
         """.trimIndent()
         },
-
 
         objectOf {
             path = "/dynamic-route/blog/:blogId/post/:postId/"
@@ -711,7 +634,6 @@ fun setupFramework7AppIndex() {
                 }, 0)
             }
         },
-
 
         objectOf {
             path = "/request-and-load/user/:userId/"
@@ -789,11 +711,7 @@ fun setupFramework7AppIndex() {
         objectOf {
             path = "(.*)"
             content = """
-                <div class="page" data-name="not-found">
-                  <div class="page-content">
-                    <div id="kunafa-not-found-root" class="kunafa-page-root"></div>
-                  </div>
-                </div>
+                <div id="kunafa-not-found-root" class="page"></div>
             """.trimIndent()
         }
     )
@@ -828,510 +746,594 @@ fun View.setupPageInitKunafaMounts() {
 
         val matchedKunafaRouteConfiguration =
             kunafaRouteConfigurationMap[framework7RoutePath.removeSuffix("/")]
-                ?: kunafaRouteConfigurationMap["(.*)"]
-                ?: return@handler
+                ?: KunafaRoute(
+                    "kunafa-not-found-root",
+                    { pageRoot -> NotFoundComponent(pageRoot) }
+                )
 
         val kunafaRootElement =
             document.getElementById(matchedKunafaRouteConfiguration.rootElementId) as HTMLElement?
         if (kunafaRootElement != null) {
-            val kunafaRootView = View(this, kunafaRootElement)
-            kunafaRootView.mount(matchedKunafaRouteConfiguration.componentFactory())
+            val kunafaParentElement = kunafaRootElement.parentElement as HTMLElement?
+            val kunafaParentView = View(null, kunafaParentElement!!)
+            val kunafaRootView = View(kunafaParentView, kunafaRootElement)
+            val component = matchedKunafaRouteConfiguration.componentFactory(kunafaRootView)
+            kunafaParentView.mount(component)
         }
     }
 
     document.addEventListener("page:init", pageLifecycleEventHandler)
-    document.addEventListener("page:reinit", pageLifecycleEventHandler)
 }
 
-class AboutComponent : Component() {
-    override fun View?.getView(): View {
-        return view {
-            element.className = "page"
-            element.setAttribute("data-name", "about")
+
+
+fun View.backLink() {
+    val BACK_LINK_HTML = """
+    <i class="icon icon-back"></i>
+    <span class="if-not-md">Back</span>
+""".trimIndent()
+    a {
+        href = "#"
+        element.className = "link back"
+        view {
+            element.innerHTML = BACK_LINK_HTML
+        }
+    }
+}
+
+fun View.f7Navbar(
+    title: String,
+    back: Boolean = false,
+    sliding: Boolean = true,
+    rightContent: (View.() -> Unit)? = null
+) {
+    view {
+        element.className = "navbar"
+
+        view { element.className = "navbar-bg" }
+
+        view {
+            element.className = buildString {
+                append("navbar-inner")
+                if (sliding) append(" sliding")
+            }
 
             view {
-                element.className = "navbar"
-                view { element.className = "navbar-bg" }
-                view {
-                    element.className = "navbar-inner sliding"
-
-                    view {
-                        element.className = "left"
-                        a {
-                            href = "#"
-                            element.className = "link back"
-                            view {
-                                element.innerHTML = """
-                                    <i class="icon icon-back"></i>
-                                    <span class="if-not-md">Back</span>
-                                """.trimIndent()
-                            }
-                        }
-                    }
-
-                    view {
-                        element.className = "title"
-                        textView { text = "About" }
-                    }
+                element.className = "left"
+                if (back) {
+                    backLink()
                 }
             }
 
             view {
-                element.className = "page-content"
+                element.className = "title"
+                textView { text = title }
+            }
 
+            if (rightContent != null) {
                 view {
-                    element.className = "block-title"
-                    textView { text = "About My App" }
-                }
-                verticalLayout {
-                    element.className = "block"
-                    textView {
-                        text = """
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                            Magni molestiae laudantium dignissimos est nobis delectus nemo
-                            ea alias voluptatum architecto, amet similique, saepe iste
-                            consectetur in repellat ut minus quibusdam!
-                        """.trimIndent()
-                    }
-                    textView {
-                        text = """
-                            Molestias et distinctio porro nesciunt ratione similique,
-                            magni doloribus, rerum nobis, aliquam quae reiciendis quasi
-                            modi. Nam a recusandae, fugiat in ea voluptates fuga eius,
-                            velit corrupti reprehenderit dignissimos consequatur!
-                        """.trimIndent()
-                    }
-                    textView {
-                        text = """
-                            Blanditiis, cumque quo adipisci. Molestiae, dolores dolorum
-                            quos doloremque ipsa ullam eligendi commodi deserunt
-                            doloribus inventore magni? Ea mollitia veniam nostrum nihil,
-                            iusto doloribus a at! Ea molestiae ullam delectus!
-                        """.trimIndent()
-                    }
+                    element.className = "right"
+                    rightContent()
                 }
             }
         }
     }
 }
 
-class NotFoundComponent : Component() {
-    override fun View?.getView(): View {
-        return view {
-            element.className = "page"
-            element.setAttribute("data-name", "not-found")
 
-            view {
-                element.className = "navbar"
-                view { element.className = "navbar-bg" }
-                view {
-                    element.className = "navbar-inner sliding"
-                    view {
-                        element.className = "left"
-                        a {
-                            href = "#"
-                            element.className = "link back"
-                            view {
-                                element.innerHTML = """
-                                    <i class="icon icon-back"></i>
-                                    <span class="if-not-md">Back</span>
-                                """.trimIndent()
-                            }
-                        }
-                    }
-                    view {
-                        element.className = "title"
-                        textView { text = "Not found" }
-                    }
-                }
-            }
+fun View.pageContent(content: View.() -> Unit): View {
+    return view {
+        element.className = "page-content"
+        content()
+    }
+}
 
-            view {
-                element.className = "page-content"
-                verticalLayout {
-                    element.className = "block block-strong inset"
-                    textView { text = "Sorry" }
-                    textView { text = "Requested content not found." }
+
+fun View?.f7Page(
+    dataName: String? = null,
+    title: String? = null,
+    back: Boolean = false,
+    sliding: Boolean = true,
+    content: View.() -> Unit,
+): View {
+    val pageRootView = view {
+        element.className = "page"
+        if (dataName != null) {
+            element.setAttribute("data-name", dataName)
+        }
+    }
+
+    if (title != null) {
+        pageRootView.f7Navbar(
+            title = title,
+            back = back,
+            sliding = sliding
+        )
+    }
+
+    pageRootView.pageContent {
+        content()
+    }
+
+    return pageRootView
+}
+
+
+fun View.f7PageInPlace(
+    dataName: String? = null,
+    title: String? = null,
+    back: Boolean = false,
+    sliding: Boolean = true,
+    content: View.() -> Unit,
+): View {
+    val pageRootView = this
+
+    if (dataName != null) {
+        pageRootView.element.setAttribute("data-name", dataName)
+    }
+
+    if (title != null && pageRootView.element.querySelector(".navbar") == null) {
+        pageRootView.f7Navbar(
+            title = title,
+            back = back,
+            sliding = sliding
+        )
+    }
+
+    pageRootView.content()
+
+    return pageRootView
+}
+
+
+fun View.f7BottomTabbar(
+    tabs: List<Pair<String, String>>,
+    activeHref: String
+) {
+    view {
+        element.className = "toolbar toolbar-bottom tabbar"
+        view {
+            element.className = "toolbar-inner"
+            tabs.forEach { (hrefValue, label) ->
+                a {
+                    href = hrefValue
+                    element.className = buildString {
+                        append("tab-link")
+                        if (hrefValue == activeHref) append(" tab-link-active")
+                    }
+                    textView { text = label }
                 }
             }
         }
     }
 }
 
-class FormComponent : Component() {
-    override fun View?.getView(): View {
-        return view {
-            element.className = "page"
-            element.setAttribute("data-name", "form")
 
-            view {
-                element.className = "navbar"
-                view { element.className = "navbar-bg" }
+
+abstract class F7PageComponent(protected val pageRoot: View) : Component() {
+
+    protected open val uniqueDataName: String? = null
+    protected open val pageTitle: String? = null
+    protected open val hasBackButton: Boolean = true
+    protected open val sliding: Boolean = true
+    protected open val wrapWithPageContent: Boolean = true
+
+    override fun View?.getView(): View {
+        return pageRoot.f7PageInPlace(
+            dataName = uniqueDataName,
+            title = pageTitle,
+            back = hasBackButton,
+            sliding = sliding,
+        ) {
+            if (wrapWithPageContent) {
+                pageRoot.pageContent {
+                    getView()
+                }
+            } else {
+                getView()
+            }
+        }
+    }
+
+    protected abstract fun View.getView()
+}
+
+
+class AboutComponent(pageRoot: View) : F7PageComponent(pageRoot) {
+    override val uniqueDataName = "about"
+    override val pageTitle = "About"
+
+    override fun View.getView() {
+        view {
+            element.className = "block-title"
+            textView { text = "About My App" }
+        }
+        verticalLayout {
+            element.className = "block"
+            textView {
+                text = """
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                    Magni molestiae laudantium dignissimos est nobis delectus nemo
+                    ea alias voluptatum architecto, amet similique, saepe iste
+                    consectetur in repellat ut minus quibusdam!
+                """.trimIndent()
+            }
+            textView {
+                text = """
+                    Molestias et distinctio porro nesciunt ratione similique,
+                    magni doloribus, rerum nobis, aliquam quae reiciendis quasi
+                    modi. Nam a recusandae, fugiat in ea voluptates fuga eius,
+                    velit corrupti reprehenderit dignissimos consequatur!
+                """.trimIndent()
+            }
+            textView {
+                text = """
+                    Blanditiis, cumque quo adipisci. Molestiae, dolores dolorum
+                    quos doloremque ipsa ullam eligendi commodi deserunt
+                    doloribus inventore magni? Ea mollitia veniam nostrum nihil,
+                    iusto doloribus a at! Ea molestiae ullam delectus!
+                """.trimIndent()
+            }
+        }
+    }
+}
+
+class NotFoundComponent(pageRoot: View) : F7PageComponent(pageRoot) {
+    override val uniqueDataName = "not-found"
+    override val pageTitle = "Not found"
+
+    override fun View.getView() {
+        verticalLayout {
+            element.className = "block block-strong inset"
+            textView { text = "Sorry" }
+            textView { text = "Requested content not found." }
+        }
+    }
+}
+
+class FormComponent(pageRoot: View) : F7PageComponent(pageRoot) {
+    override val uniqueDataName = "form"
+    override val pageTitle = "Form"
+
+    override fun View.getView() {
+        view {
+            element.className = "block-title"
+            textView { text = "Form Example" }
+        }
+
+        view {
+            element.className = "list list-strong-ios list-dividers-ios list-outline-ios"
+            ul {
                 view {
-                    element.className = "navbar-inner sliding"
+                    element.className = "item-content item-input"
                     view {
-                        element.className = "left"
-                        a {
-                            href = "#"
-                            element.className = "link back"
+                        element.className = "item-inner"
+                        view {
+                            element.className = "item-title item-label"
+                            textView { text = "Name" }
+                        }
+                        view {
+                            element.className = "item-input-wrap"
+                            input {
+                                element.setAttribute("type", "text")
+                                element.setAttribute("placeholder", "Your name")
+                            }
+                        }
+                    }
+                }
+
+                view {
+                    element.className = "item-content item-input"
+                    view {
+                        element.className = "item-inner"
+                        view {
+                            element.className = "item-title item-label"
+                            textView { text = "E-mail" }
+                        }
+                        view {
+                            element.className = "item-input-wrap"
+                            input {
+                                element.setAttribute("type", "email")
+                                element.setAttribute("placeholder", "E-mail")
+                            }
+                        }
+                    }
+                }
+
+                view {
+                    element.className = "item-content item-input"
+                    view {
+                        element.className = "item-inner"
+                        view {
+                            element.className = "item-title item-label"
+                            textView { text = "URL" }
+                        }
+                        view {
+                            element.className = "item-input-wrap"
+                            input {
+                                element.setAttribute("type", "url")
+                                element.setAttribute("placeholder", "URL")
+                            }
+                        }
+                    }
+                }
+
+                view {
+                    element.className = "item-content item-input"
+                    view {
+                        element.className = "item-inner"
+                        view {
+                            element.className = "item-title item-label"
+                            textView { text = "Password" }
+                        }
+                        view {
+                            element.className = "item-input-wrap"
+                            input {
+                                element.setAttribute("type", "password")
+                                element.setAttribute("placeholder", "Password")
+                            }
+                        }
+                    }
+                }
+
+                view {
+                    element.className = "item-content item-input"
+                    view {
+                        element.className = "item-inner"
+                        view {
+                            element.className = "item-title item-label"
+                            textView { text = "Phone" }
+                        }
+                        view {
+                            element.className = "item-input-wrap"
+                            input {
+                                element.setAttribute("type", "tel")
+                                element.setAttribute("placeholder", "Phone")
+                            }
+                        }
+                    }
+                }
+
+                view {
+                    element.className = "item-content item-input"
+                    view {
+                        element.className = "item-inner"
+                        view {
+                            element.className = "item-title item-label"
+                            textView { text = "Gender" }
+                        }
+                        view {
+                            element.className = "item-input-wrap"
                             view {
                                 element.innerHTML = """
-                                    <i class="icon icon-back"></i>
-                                    <span class="if-not-md">Back</span>
+                                    <select>
+                                      <option>Male</option>
+                                      <option>Female</option>
+                                    </select>
                                 """.trimIndent()
                             }
                         }
                     }
+                }
+
+                view {
+                    element.className = "item-content item-input"
                     view {
-                        element.className = "title"
-                        textView { text = "Form" }
-                    }
-                }
-            }
-
-            view {
-                element.className = "page-content"
-
-                view {
-                    element.className = "block-title"
-                    textView { text = "Form Example" }
-                }
-
-                view {
-                    element.className = "list list-strong-ios list-dividers-ios list-outline-ios"
-                    ul {
+                        element.className = "item-inner"
                         view {
-                            element.className = "item-content item-input"
-                            view {
-                                element.className = "item-inner"
-                                view {
-                                    element.className = "item-title item-label"
-                                    textView { text = "Name" }
-                                }
-                                view {
-                                    element.className = "item-input-wrap"
-                                    input {
-                                        element.setAttribute("type", "text")
-                                        element.setAttribute("placeholder", "Your name")
-                                    }
-                                }
-                            }
+                            element.className = "item-title item-label"
+                            textView { text = "Birth date" }
                         }
-
                         view {
-                            element.className = "item-content item-input"
-                            view {
-                                element.className = "item-inner"
-                                view {
-                                    element.className = "item-title item-label"
-                                    textView { text = "E-mail" }
-                                }
-                                view {
-                                    element.className = "item-input-wrap"
-                                    input {
-                                        element.setAttribute("type", "email")
-                                        element.setAttribute("placeholder", "E-mail")
-                                    }
-                                }
-                            }
-                        }
-
-                        view {
-                            element.className = "item-content item-input"
-                            view {
-                                element.className = "item-inner"
-                                view {
-                                    element.className = "item-title item-label"
-                                    textView { text = "URL" }
-                                }
-                                view {
-                                    element.className = "item-input-wrap"
-                                    input {
-                                        element.setAttribute("type", "url")
-                                        element.setAttribute("placeholder", "URL")
-                                    }
-                                }
-                            }
-                        }
-
-                        view {
-                            element.className = "item-content item-input"
-                            view {
-                                element.className = "item-inner"
-                                view {
-                                    element.className = "item-title item-label"
-                                    textView { text = "Password" }
-                                }
-                                view {
-                                    element.className = "item-input-wrap"
-                                    input {
-                                        element.setAttribute("type", "password")
-                                        element.setAttribute("placeholder", "Password")
-                                    }
-                                }
-                            }
-                        }
-
-                        view {
-                            element.className = "item-content item-input"
-                            view {
-                                element.className = "item-inner"
-                                view {
-                                    element.className = "item-title item-label"
-                                    textView { text = "Phone" }
-                                }
-                                view {
-                                    element.className = "item-input-wrap"
-                                    input {
-                                        element.setAttribute("type", "tel")
-                                        element.setAttribute("placeholder", "Phone")
-                                    }
-                                }
-                            }
-                        }
-
-                        view {
-                            element.className = "item-content item-input"
-                            view {
-                                element.className = "item-inner"
-                                view {
-                                    element.className = "item-title item-label"
-                                    textView { text = "Gender" }
-                                }
-                                view {
-                                    element.className = "item-input-wrap"
-                                    view {
-                                        element.innerHTML = """
-                                            <select>
-                                              <option>Male</option>
-                                              <option>Female</option>
-                                            </select>
-                                        """.trimIndent()
-                                    }
-                                }
-                            }
-                        }
-
-                        view {
-                            element.className = "item-content item-input"
-                            view {
-                                element.className = "item-inner"
-                                view {
-                                    element.className = "item-title item-label"
-                                    textView { text = "Birth date" }
-                                }
-                                view {
-                                    element.className = "item-input-wrap"
-                                    input {
-                                        element.setAttribute("type", "date")
-                                        element.setAttribute("placeholder", "Birth day")
-                                        element.setAttribute("value", "2014-04-30")
-                                    }
-                                }
-                            }
-                        }
-
-                        view {
-                            element.className = "item-content"
-                            view {
-                                element.className = "item-inner"
-                                view {
-                                    element.className = "item-title"
-                                    textView { text = "Toggle" }
-                                }
-                                view {
-                                    element.className = "item-after"
-                                    label {
-                                        element.className = "toggle toggle-init"
-                                        input {
-                                            element.setAttribute("type", "checkbox")
-                                        }
-                                        span {
-                                            element.className = "toggle-icon"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        view {
-                            element.className = "item-content item-input"
-                            view {
-                                element.className = "item-inner"
-                                view {
-                                    element.className = "item-title item-label"
-                                    textView { text = "Slider" }
-                                }
-                                view {
-                                    element.className = "item-input-wrap"
-                                    view {
-                                        element.className = "range-slider range-slider-init"
-                                        element.setAttribute("data-label", "true")
-                                        input {
-                                            element.setAttribute("type", "range")
-                                            element.setAttribute("value", "50")
-                                            element.setAttribute("min", "0")
-                                            element.setAttribute("max", "100")
-                                            element.setAttribute("step", "1")
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        view {
-                            element.className = "item-content item-input align-top"
-                            view {
-                                element.className = "item-inner"
-                                view {
-                                    element.className = "item-title item-label"
-                                    textView { text = "Textarea" }
-                                }
-                                view {
-                                    element.className = "item-input-wrap"
-                                    view {
-                                        element.innerHTML =
-                                            """<textarea placeholder="Bio"></textarea>""".trimIndent()
-                                    }
-                                }
-                            }
-                        }
-
-                        view {
-                            element.className = "item-content item-input align-top"
-                            view {
-                                element.className = "item-inner"
-                                view {
-                                    element.className = "item-title item-label"
-                                    textView { text = "Resizable" }
-                                }
-                                view {
-                                    element.className = "item-input-wrap"
-                                    view {
-                                        element.innerHTML =
-                                            """<textarea placeholder="Bio" class="resizable"></textarea>""".trimIndent()
-                                    }
-                                }
+                            element.className = "item-input-wrap"
+                            input {
+                                element.setAttribute("type", "date")
+                                element.setAttribute("placeholder", "Birth day")
+                                element.setAttribute("value", "2014-04-30")
                             }
                         }
                     }
                 }
 
                 view {
-                    element.className = "block-title"
-                    textView { text = "Buttons" }
-                }
-
-                view {
-                    element.className = "block block-strong-ios block-outline-ios grid grid-cols-2 grid-gap"
-
-                    fun createFramework7Button(buttonText: String, buttonCssClasses: String) {
-                        a {
-                            href = "#"
-                            element.className = buttonCssClasses
-                            textView { text = buttonText }
+                    element.className = "item-content"
+                    view {
+                        element.className = "item-inner"
+                        view {
+                            element.className = "item-title"
+                            textView { text = "Toggle" }
                         }
-                    }
-
-                    createFramework7Button("Button", "button")
-                    createFramework7Button("Fill", "button button-fill")
-                    createFramework7Button("Raised", "button button-raised")
-                    createFramework7Button("Raised Fill", "button button-raised button-fill")
-                    createFramework7Button("Round", "button button-round")
-                    createFramework7Button("Round Fill", "button button-round button-fill")
-                    createFramework7Button("Outline", "button button-outline")
-                    createFramework7Button("Outline Round", "button button-round button-outline")
-                    createFramework7Button("Small", "button button-small button-outline")
-                    createFramework7Button("Small Round", "button button-small button-round button-outline")
-                    createFramework7Button("Small", "button button-small button-fill")
-                    createFramework7Button("Small Round", "button button-small button-round button-fill")
-                    createFramework7Button("Large", "button button-large button-raised")
-                    createFramework7Button("Large Fill", "button button-large button-fill button-raised")
-                    createFramework7Button("Large Red", "button button-large button-fill button-raised color-red")
-                    createFramework7Button("Large Green", "button button-large button-fill button-raised color-green")
-                }
-
-                view {
-                    element.className = "block-title"
-                    textView { text = "Checkbox group" }
-                }
-
-                view {
-                    element.className = "list list-strong-ios list-outline-ios list-dividers-ios"
-                    ul {
-                        fun createCheckboxItem(checkboxLabelText: String, checkboxValue: String, isChecked: Boolean) {
+                        view {
+                            element.className = "item-after"
                             label {
-                                element.className = "item-checkbox item-content"
+                                element.className = "toggle toggle-init"
                                 input {
                                     element.setAttribute("type", "checkbox")
-                                    element.setAttribute("name", "checkbox")
-                                    element.setAttribute("value", checkboxValue)
-                                    if (isChecked) {
-                                        element.setAttribute("checked", "checked")
-                                    }
                                 }
-                                view {
-                                    element.className = "item-checkbox-icon-wrapper"
-                                    style { marginRight = 8.px }
-                                    element.innerHTML = """<i class="icon icon-checkbox"></i>"""
-                                }
-                                view {
-                                    element.className = "item-inner"
-                                    view {
-                                        element.className = "item-title"
-                                        textView { text = checkboxLabelText }
-                                    }
+                                span {
+                                    element.className = "toggle-icon"
                                 }
                             }
                         }
-
-                        createCheckboxItem("Books", "Books", true)
-                        createCheckboxItem("Movies", "Movies", false)
-                        createCheckboxItem("Food", "Food", false)
-                        createCheckboxItem("Drinks", "Drinks", false)
                     }
                 }
 
                 view {
-                    element.className = "block-title"
-                    textView { text = "Radio buttons group" }
-                }
-
-                view {
-                    element.className = "list list-strong-ios list-outline-ios list-dividers-ios"
-                    ul {
-                        fun createRadioItem(radioLabelText: String, radioValue: String, isChecked: Boolean) {
-                            label {
-                                element.className = "item-radio item-content"
+                    element.className = "item-content item-input"
+                    view {
+                        element.className = "item-inner"
+                        view {
+                            element.className = "item-title item-label"
+                            textView { text = "Slider" }
+                        }
+                        view {
+                            element.className = "item-input-wrap"
+                            view {
+                                element.className = "range-slider range-slider-init"
+                                element.setAttribute("data-label", "true")
                                 input {
-                                    element.setAttribute("type", "radio")
-                                    element.setAttribute("name", "radio")
-                                    element.setAttribute("value", radioValue)
-                                    if (isChecked) {
-                                        element.setAttribute("checked", "checked")
-                                    }
-                                }
-                                view {
-                                    element.className = "item-radio-icon-wrapper"
-                                    style { marginRight = 8.px }
-                                    element.innerHTML = """<i class="icon icon-radio"></i>"""
-                                }
-                                view {
-                                    element.className = "item-inner"
-                                    view {
-                                        element.className = "item-title"
-                                        textView { text = radioLabelText }
-                                    }
+                                    element.setAttribute("type", "range")
+                                    element.setAttribute("value", "50")
+                                    element.setAttribute("min", "0")
+                                    element.setAttribute("max", "100")
+                                    element.setAttribute("step", "1")
                                 }
                             }
                         }
-
-                        createRadioItem("Books", "Books", true)
-                        createRadioItem("Movies", "Movies", false)
-                        createRadioItem("Food", "Food", false)
-                        createRadioItem("Drinks", "Drinks", false)
                     }
                 }
+
+                view {
+                    element.className = "item-content item-input align-top"
+                    view {
+                        element.className = "item-inner"
+                        view {
+                            element.className = "item-title item-label"
+                            textView { text = "Textarea" }
+                        }
+                        view {
+                            element.className = "item-input-wrap"
+                            view {
+                                element.innerHTML =
+                                    """<textarea placeholder="Bio"></textarea>""".trimIndent()
+                            }
+                        }
+                    }
+                }
+
+                view {
+                    element.className = "item-content item-input align-top"
+                    view {
+                        element.className = "item-inner"
+                        view {
+                            element.className = "item-title item-label"
+                            textView { text = "Resizable" }
+                        }
+                        view {
+                            element.className = "item-input-wrap"
+                            view {
+                                element.innerHTML =
+                                    """<textarea placeholder="Bio" class="resizable"></textarea>""".trimIndent()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        view {
+            element.className = "block-title"
+            textView { text = "Buttons" }
+        }
+
+        view {
+            element.className = "block block-strong-ios block-outline-ios grid grid-cols-2 grid-gap"
+
+            fun createFramework7Button(buttonText: String, buttonCssClasses: String) {
+                a {
+                    href = "#"
+                    element.className = buttonCssClasses
+                    textView { text = buttonText }
+                }
+            }
+
+            createFramework7Button("Button", "button")
+            createFramework7Button("Fill", "button button-fill")
+            createFramework7Button("Raised", "button button-raised")
+            createFramework7Button("Raised Fill", "button button-raised button-fill")
+            createFramework7Button("Round", "button button-round")
+            createFramework7Button("Round Fill", "button button-round button-fill")
+            createFramework7Button("Outline", "button button-outline")
+            createFramework7Button("Outline Round", "button button-round button-outline")
+            createFramework7Button("Small", "button button-small button-outline")
+            createFramework7Button("Small Round", "button button-small button-round button-outline")
+            createFramework7Button("Small", "button button-small button-fill")
+            createFramework7Button("Small Round", "button button-small button-round button-fill")
+            createFramework7Button("Large", "button button-large button-raised")
+            createFramework7Button("Large Fill", "button button-large button-fill button-raised")
+            createFramework7Button("Large Red", "button button-large button-fill button-raised color-red")
+            createFramework7Button("Large Green", "button button-large button-fill button-raised color-green")
+        }
+
+        view {
+            element.className = "block-title"
+            textView { text = "Checkbox group" }
+        }
+
+        view {
+            element.className = "list list-strong-ios list-outline-ios list-dividers-ios"
+            ul {
+                fun createCheckboxItem(checkboxLabelText: String, checkboxValue: String, isChecked: Boolean) {
+                    label {
+                        element.className = "item-checkbox item-content"
+                        input {
+                            element.setAttribute("type", "checkbox")
+                            element.setAttribute("name", "checkbox")
+                            element.setAttribute("value", checkboxValue)
+                            if (isChecked) {
+                                element.setAttribute("checked", "checked")
+                            }
+                        }
+                        view {
+                            element.className = "item-checkbox-icon-wrapper"
+                            style { marginRight = 8.px }
+                            element.innerHTML = """<i class="icon icon-checkbox"></i>"""
+                        }
+                        view {
+                            element.className = "item-inner"
+                            view {
+                                element.className = "item-title"
+                                textView { text = checkboxLabelText }
+                            }
+                        }
+                    }
+                }
+
+                createCheckboxItem("Books", "Books", true)
+                createCheckboxItem("Movies", "Movies", false)
+                createCheckboxItem("Food", "Food", false)
+                createCheckboxItem("Drinks", "Drinks", false)
+            }
+        }
+
+        view {
+            element.className = "block-title"
+            textView { text = "Radio buttons group" }
+        }
+
+        view {
+            element.className = "list list-strong-ios list-outline-ios list-dividers-ios"
+            ul {
+                fun createRadioItem(radioLabelText: String, radioValue: String, isChecked: Boolean) {
+                    label {
+                        element.className = "item-radio item-content"
+                        input {
+                            element.setAttribute("type", "radio")
+                            element.setAttribute("name", "radio")
+                            element.setAttribute("value", radioValue)
+                            if (isChecked) {
+                                element.setAttribute("checked", "checked")
+                            }
+                        }
+                        view {
+                            element.className = "item-radio-icon-wrapper"
+                            style { marginRight = 8.px }
+                            element.innerHTML = """<i class="icon icon-radio"></i>"""
+                        }
+                        view {
+                            element.className = "item-inner"
+                            view {
+                                element.className = "item-title"
+                                textView { text = radioLabelText }
+                            }
+                        }
+                    }
+                }
+
+                createRadioItem("Books", "Books", true)
+                createRadioItem("Movies", "Movies", false)
+                createRadioItem("Food", "Food", false)
+                createRadioItem("Drinks", "Drinks", false)
             }
         }
     }
@@ -1352,39 +1354,11 @@ class DynamicRouteComponent(
         val personHeightCentimeters = 199
         val favoriteGamesList = listOf("Basketball", "Chess", "Formula 1")
 
-        return view {
-            element.className = "page"
-
-            view {
-                element.className = "navbar"
-                view { element.className = "navbar-bg" }
-                view {
-                    element.className = "navbar-inner sliding"
-
-                    view {
-                        element.className = "left"
-                        a {
-                            href = "#"
-                            element.className = "link back"
-                            view {
-                                element.innerHTML = """
-                                    <i class="icon icon-back"></i>
-                                    <span class="if-not-md">Back</span>
-                                """.trimIndent()
-                            }
-                        }
-                    }
-
-                    view {
-                        element.className = "title"
-                        textView { text = "Component Page" }
-                    }
-                }
-            }
-
-            view {
-                element.className = "page-content"
-
+        return f7Page(
+            dataName = "dynamic-route",
+            title = "Component Page",
+            back = true,
+            content = {
                 view {
                     element.className = "block block-strong inset"
                     textView {
@@ -1466,106 +1440,128 @@ class DynamicRouteComponent(
                         }
                     }
                 }
+            },
+        )
+    }
+}
+
+class TabsStaticComponent(pageRoot: View) : F7PageComponent(pageRoot) {
+
+    override val uniqueDataName = "tabs-static"
+    override val pageTitle = "Static Tabs"
+    override val hasBackButton = true
+    override val wrapWithPageContent: Boolean = false
+
+    override fun View.getView() {
+        f7BottomTabbar(
+            tabs = listOf(
+                "#tab-1" to "Tab 1",
+                "#tab-2" to "Tab 2",
+                "#tab-3" to "Tab 3"
+            ),
+            activeHref = "#tab-1"
+        )
+
+        view {
+            element.className = "tabs"
+
+            view {
+                id = "tab-1"
+                element.className = "page-content tab tab-active"
+                view {
+                    tabContent("Tab 1 content")
+                }
             }
+
+            view {
+                id = "tab-2"
+                element.className = "page-content tab"
+                view {
+                    tabContent("Tab 2 content")
+                }
+            }
+
+            view {
+                id = "tab-3"
+                element.className = "page-content tab"
+                view {
+                    tabContent("Tab 3 content")
+                }
+            }
+        }
+    }
+
+    private fun View.tabContent(title: String) {
+        element.className = "block"
+
+        textView { text = title }
+
+        textView {
+            text =
+                "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ullam enim quia molestiae facilis laudantium " +
+                        "voluptates obcaecati officia cum, sit libero commodi. Ratione illo suscipit temporibus sequi iure ad " +
+                        "laboriosam accusamus?"
+        }
+        textView {
+            text =
+                "Saepe explicabo voluptas ducimus provident, doloremque quo totam molestias! Suscipit blanditiis eaque " +
+                        "exercitationem praesentium reprehenderit, fuga accusamus possimus sed, sint facilis ratione quod, qui " +
+                        "dignissimos voluptas! Aliquam rerum consequuntur deleniti."
+        }
+        textView {
+            text =
+                "Totam reprehenderit amet commodi ipsum nam provident doloremque possimus odio itaque, est animi culpa modi " +
+                        "consequatur reiciendis corporis libero laudantium sed eveniet unde delectus a maiores nihil dolores? Natus, " +
+                        "perferendis."
+        }
+        textView {
+            text =
+                "Atque quis totam repellendus omnis alias magnam corrupti, possimus aspernatur perspiciatis quae provident " +
+                        "consequatur minima doloremque blanditiis nihil maxime ducimus earum autem. Magni animi blanditiis similique " +
+                        "iusto, repellat sed quisquam!"
+        }
+        textView {
+            text =
+                "Suscipit, facere quasi atque totam. Repudiandae facilis at optio atque, rem nam, natus ratione cum enim " +
+                        "voluptatem suscipit veniam! Repellat, est debitis. Modi nam mollitia explicabo, unde aliquid impedit! Adipisci!"
+        }
+        textView {
+            text =
+                "Deserunt adipisci tempora asperiores, quo, nisi ex delectus vitae consectetur iste fugiat iusto dolorem " +
+                        "autem. Itaque, ipsa voluptas, a assumenda rem, dolorum porro accusantium, officiis veniam nostrum cum cumque " +
+                        "impedit."
+        }
+        textView {
+            text =
+                "Laborum illum ipsa voluptatibus possimus nesciunt ex consequatur rem, natus ad praesentium rerum libero " +
+                        "consectetur temporibus cupiditate atque aspernatur, eaque provident eligendi quaerat ea soluta doloremque. " +
+                        "Iure fugit, minima facere."
         }
     }
 }
 
-class TabsStaticComponent : Component() {
+class TabsAnimatedComponent(pageRoot: View) : F7PageComponent(pageRoot) {
 
-    override fun View?.getView(): View {
-        return view {
-            element.className = "Page"
-            element.setAttribute("data-name", "tabs-static")
+    override val uniqueDataName = "tabs-animated"
+    override val pageTitle = "Animated Tabs"
+    override val hasBackButton = true
+    override val wrapWithPageContent: Boolean = false
 
+    override fun View.getView() {
+        f7BottomTabbar(
+            tabs = listOf(
+                "#tab-1" to "Tab 1",
+                "#tab-2" to "Tab 2",
+                "#tab-3" to "Tab 3"
+            ),
+            activeHref = "#tab-1"
+        )
 
-            view {
-                element.className = "navbar"
-                view { element.className = "navbar-bg" }
-                view {
-                    element.className = "navbar-inner sliding"
-                    view {
-                        element.className = "title"
-                        textView { text = "Static Tabs" }
-                    }
-                }
-            }
-
-
-            view {
-                element.className = "toolbar toolbar-bottom tabbar"
-                view {
-                    element.className = "toolbar-inner"
-                    a {
-                        href = "#tab-1"
-                        element.className = "tab-link tab-link-active"
-                        textView { text = "Tab 1" }
-                    }
-                    a {
-                        href = "#tab-2"
-                        element.className = "tab-link"
-                        textView { text = "Tab 2" }
-                    }
-                    a {
-                        href = "#tab-3"
-                        element.className = "tab-link"
-                        textView { text = "Tab 3" }
-                    }
-                }
-            }
-
-            fun View.tabContent(title: String) {
-                element.className = "block"
-
-                textView { text = title }
-
-                textView {
-                    text =
-                        "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ullam enim quia molestiae facilis laudantium " +
-                                "voluptates obcaecati officia cum, sit libero commodi. Ratione illo suscipit temporibus sequi iure ad " +
-                                "laboriosam accusamus?"
-                }
-                textView {
-                    text =
-                        "Saepe explicabo voluptas ducimus provident, doloremque quo totam molestias! Suscipit blanditiis eaque " +
-                                "exercitationem praesentium reprehenderit, fuga accusamus possimus sed, sint facilis ratione quod, qui " +
-                                "dignissimos voluptas! Aliquam rerum consequuntur deleniti."
-                }
-                textView {
-                    text =
-                        "Totam reprehenderit amet commodi ipsum nam provident doloremque possimus odio itaque, est animi culpa modi " +
-                                "consequatur reiciendis corporis libero laudantium sed eveniet unde delectus a maiores nihil dolores? Natus, " +
-                                "perferendis."
-                }
-                textView {
-                    text =
-                        "Atque quis totam repellendus omnis alias magnam corrupti, possimus aspernatur perspiciatis quae provident " +
-                                "consequatur minima doloremque blanditiis nihil maxime ducimus earum autem. Magni animi blanditiis similique " +
-                                "iusto, repellat sed quisquam!"
-                }
-                textView {
-                    text =
-                        "Suscipit, facere quasi atque totam. Repudiandae facilis at optio atque, rem nam, natus ratione cum enim " +
-                                "voluptatem suscipit veniam! Repellat, est debitis. Modi nam mollitia explicabo, unde aliquid impedit! Adipisci!"
-                }
-                textView {
-                    text =
-                        "Deserunt adipisci tempora asperiores, quo, nisi ex delectus vitae consectetur iste fugiat iusto dolorem " +
-                                "autem. Itaque, ipsa voluptas, a assumenda rem, dolorum porro accusantium, officiis veniam nostrum cum cumque " +
-                                "impedit."
-                }
-                textView {
-                    text =
-                        "Laborum illum ipsa voluptatibus possimus nesciunt ex consequatur rem, natus ad praesentium rerum libero " +
-                                "consectetur temporibus cupiditate atque aspernatur, eaque provident eligendi quaerat ea soluta doloremque. " +
-                                "Iure fugit, minima facere."
-                }
-            }
-
+        view {
+            element.className = "tabs-animated-wrap"
 
             view {
                 element.className = "tabs"
-
 
                 view {
                     id = "tab-1"
@@ -1575,7 +1571,6 @@ class TabsStaticComponent : Component() {
                     }
                 }
 
-
                 view {
                     id = "tab-2"
                     element.className = "page-content tab"
@@ -1583,7 +1578,6 @@ class TabsStaticComponent : Component() {
                         tabContent("Tab 2 content")
                     }
                 }
-
 
                 view {
                     id = "tab-3"
@@ -1595,55 +1589,88 @@ class TabsStaticComponent : Component() {
             }
         }
     }
+
+    private fun View.tabContent(title: String) {
+        element.className = "block"
+
+        textView { text = title }
+
+        textView {
+            text =
+                "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ullam enim quia molestiae facilis laudantium " +
+                        "voluptates obcaecati officia cum, sit libero commodi. Ratione illo suscipit temporibus sequi iure ad " +
+                        "laboriosam accusamus?"
+        }
+        textView {
+            text =
+                "Saepe explicabo voluptas ducimus provident, doloremque quo totam molestias! Suscipit blanditiis eaque " +
+                        "exercitationem praesentium reprehenderit, fuga accusamus possimus sed, sint facilis ratione quod, qui " +
+                        "dignissimos voluptas! Aliquam rerum consequuntur deleniti."
+        }
+        textView {
+            text =
+                "Totam reprehenderit amet commodi ipsum nam provident doloremque possimus odio itaque, est animi culpa modi " +
+                        "consequatur reiciendis corporis libero laudantium sed eveniet unde delectus a maiores nihil dolores? Natus, " +
+                        "perferendis."
+        }
+        textView {
+            text =
+                "Atque quis totam repellendus omnis alias magnam corrupti, possimus aspernatur perspiciatis quae provident " +
+                        "consequatur minima doloremque blanditiis nihil maxime ducimus earum autem. Magni animi blanditiis similique " +
+                        "iusto, repellat sed quisquam!"
+        }
+        textView {
+            text =
+                "Suscipit, facere quasi atque totam. Repudiandae facilis at optio atque, rem nam, natus ratione cum enim " +
+                        "voluptatem suscipit veniam! Repellat, est debitis. Modi nam mollitia explicabo, unde aliquid impedit! Adipisci!"
+        }
+        textView {
+            text =
+                "Deserunt adipisci tempora asperiores, quo, nisi ex delectus vitae consectetur iste fugiat iusto dolorem " +
+                        "autem. Itaque, ipsa voluptas, a assumenda rem, dolorum porro accusantium, officiis veniam nostrum cum cumque " +
+                        "impedit."
+        }
+        textView {
+            text =
+                "Laborum illum ipsa voluptatibus possimus nesciunt ex consequatur rem, natus ad praesentium rerum libero " +
+                        "consectetur temporibus cupiditate atque aspernatur, eaque provident eligendi quaerat ea soluta doloremque. " +
+                        "Iure fugit, minima facere."
+        }
+    }
 }
 
-class TabsAnimatedComponent : Component() {
 
-    override fun View?.getView(): View {
-        return view {
-            element.className = "Page"
-            element.setAttribute("data-name", "tabs-animated")
+class TabsSwipeableComponent(pageRoot: View) : F7PageComponent(pageRoot) {
 
+    override val uniqueDataName = "tabs-swipeable"
+    override val pageTitle = "Swipeable Tabs"
+    override val hasBackButton: Boolean = true
+    override val wrapWithPageContent: Boolean = false
 
-            view {
-                element.className = "navbar"
-                view { element.className = "navbar-bg" }
-                view {
-                    element.className = "navbar-inner sliding"
-                    view {
-                        element.className = "title"
-                        textView { text = "Animated Tabs" }
-                    }
-                }
+    override fun View.getView() {
+        f7BottomTabbar(
+            tabs = listOf(
+                "#tab-1" to "Tab 1",
+                "#tab-2" to "Tab 2",
+                "#tab-3" to "Tab 3"
+            ),
+            activeHref = "#tab-1"
+        )
+
+        fun View.addSlide(id: String, title: String, isActive: Boolean) = swiperSlide {
+            this.id = id
+            element.className = buildString {
+                append("page-content tab")
+                if (isActive) append(" tab-active")
             }
-
-
             view {
-                element.className = "toolbar toolbar-bottom tabbar"
-                view {
-                    element.className = "toolbar-inner"
-                    a {
-                        href = "#tab-1"
-                        element.className = "tab-link tab-link-active"
-                        textView { text = "Tab 1" }
-                    }
-                    a {
-                        href = "#tab-2"
-                        element.className = "tab-link"
-                        textView { text = "Tab 2" }
-                    }
-                    a {
-                        href = "#tab-3"
-                        element.className = "tab-link"
-                        textView { text = "Tab 3" }
-                    }
-                }
-            }
-
-            fun View.tabContent(title: String) {
                 element.className = "block"
 
                 textView { text = title }
+                a {
+                    href = "/dynamic-route/blog/45/post/125/?foo=bar#about"
+                    textView { text = "Dynamic (Component) Route" }
+                }
 
                 textView {
                     text =
@@ -1687,156 +1714,41 @@ class TabsAnimatedComponent : Component() {
                                 "Iure fugit, minima facere."
                 }
             }
-
-
-            view {
-                element.className = "tabs-animated-wrap"
-
-                view {
-                    element.className = "tabs"
-
-
-                    view {
-                        id = "tab-1"
-                        element.className = "page-content tab tab-active"
-                        view {
-                            tabContent("Tab 1 content")
-                        }
-                    }
-
-
-                    view {
-                        id = "tab-2"
-                        element.className = "page-content tab"
-                        view {
-                            tabContent("Tab 2 content")
-                        }
-                    }
-
-
-                    view {
-                        id = "tab-3"
-                        element.className = "page-content tab"
-                        view {
-                            tabContent("Tab 3 content")
-                        }
-                    }
-                }
-            }
         }
+
+        swiperContainer {
+            element.className = "tabs"
+            addSlide("tab-1", "Tab 1 content", isActive = true)
+            addSlide("tab-2", "Tab 2 content", isActive = false)
+            addSlide("tab-3", "Tab 3 content", isActive = false)
+        }
+    }
+
+    companion object : Route {
+        override var fullPath :String? = null
+        override val route =
+            RouteDetails(relativePath = "/tabs-swipeable", title = "", rootElementId = "kunafa-tabs-swipeable-root")
     }
 }
 
-class TabsSwipeableComponent : Component() {
 
-    override fun View?.getView(): View {
-
-        return view {
-            element.className = "Page"
-            element.setAttribute("data-name", "tabs-swipeable")
-            view {
-                element.className = "navbar"
-                view { element.className = "navbar-bg" }
-                view {
-                    element.className = "navbar-inner sliding"
-                    view {
-                        element.className = "title"
-                        textView { text = "Swipeable Tabs" }
-                    }
-                }
-            }
-            view {
-                element.className = "toolbar toolbar-bottom tabbar"
-                view {
-                    element.className = "toolbar-inner"
-                    a {
-                        href = "#tab-1"
-                        element.className = "tab-link tab-link-active"
-                        textView { text = "Tab 1" }
-                    }
-                    a {
-                        href = "#tab-2"
-                        element.className = "tab-link"
-                        textView { text = "Tab 2" }
-                    }
-                    a {
-                        href = "#tab-3"
-                        element.className = "tab-link"
-                        textView { text = "Tab 3" }
-                    }
-                }
-            }
-            fun View.addSlide(id: String, title: String, isActive: Boolean) = swiperSlide {
-                this.id = id
-                element.className = buildString {
-                    append("page-content tab")
-                    if (isActive) append(" tab-active")
-                }
-                view {
-                    element.className = "block"
-
-                    textView { text = title }
-
-                    textView {
-                        text =
-                            "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ullam enim quia molestiae facilis laudantium " +
-                                    "voluptates obcaecati officia cum, sit libero commodi. Ratione illo suscipit temporibus sequi iure ad " +
-                                    "laboriosam accusamus?"
-                    }
-                    textView {
-                        text =
-                            "Saepe explicabo voluptas ducimus provident, doloremque quo totam molestias! Suscipit blanditiis eaque " +
-                                    "exercitationem praesentium reprehenderit, fuga accusamus possimus sed, sint facilis ratione quod, qui " +
-                                    "dignissimos voluptas! Aliquam rerum consequuntur deleniti."
-                    }
-                    textView {
-                        text =
-                            "Totam reprehenderit amet commodi ipsum nam provident doloremque possimus odio itaque, est animi culpa modi " +
-                                    "consequatur reiciendis corporis libero laudantium sed eveniet unde delectus a maiores nihil dolores? Natus, " +
-                                    "perferendis."
-                    }
-                    textView {
-                        text =
-                            "Atque quis totam repellendus omnis alias magnam corrupti, possimus aspernatur perspiciatis quae provident " +
-                                    "consequatur minima doloremque blanditiis nihil maxime ducimus earum autem. Magni animi blanditiis similique " +
-                                    "iusto, repellat sed quisquam!"
-                    }
-                    textView {
-                        text =
-                            "Suscipit, facere quasi atque totam. Repudiandae facilis at optio atque, rem nam, natus ratione cum enim " +
-                                    "voluptatem suscipit veniam! Repellat, est debitis. Modi nam mollitia explicabo, unde aliquid impedit! Adipisci!"
-                    }
-                    textView {
-                        text =
-                            "Deserunt adipisci tempora asperiores, quo, nisi ex delectus vitae consectetur iste fugiat iusto dolorem " +
-                                    "autem. Itaque, ipsa voluptas, a assumenda rem, dolorum porro accusantium, officiis veniam nostrum cum cumque " +
-                                    "impedit."
-                    }
-                    textView {
-                        text =
-                            "Laborum illum ipsa voluptatibus possimus nesciunt ex consequatur rem, natus ad praesentium rerum libero " +
-                                    "consectetur temporibus cupiditate atque aspernatur, eaque provident eligendi quaerat ea soluta doloremque. " +
-                                    "Iure fugit, minima facere."
-                    }
-                }
-
-            }
-
-            swiperContainer {
-                element.className = "tabs"
-                addSlide("tab-1", "Tab 1 content", isActive = true)
-                addSlide("tab-2", "Tab 2 content", isActive = false)
-                addSlide("tab-3", "Tab 3 content", isActive = false)
-            }
-
-        }
-
-
-    }
-}
 
 fun View?.swiperContainer(lifecycleObserver: LifecycleObserver? = null, block: CustomView.() -> Unit = {}) =
     CustomView(this, "swiper-container").visit(lifecycleObserver, block)
 
 fun View?.swiperSlide(lifecycleObserver: LifecycleObserver? = null, block: CustomView.() -> Unit = {}) =
     CustomView(this, "swiper-slide").visit(lifecycleObserver, block)
+
+
+
+data class RouteDetails(
+    val relativePath: String,
+    val title: String,
+    val rootElementId: String,
+    val image:String? = null
+)
+
+interface Route {
+    var fullPath:String?
+    val route: RouteDetails
+}

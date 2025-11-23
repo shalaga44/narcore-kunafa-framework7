@@ -72,7 +72,7 @@ external interface F7Route {
     var panel: dynamic
 
     // Events
-    var on: F7RouteEvents?
+    var on: F7RouteEvents
 
     // Alias / redirect
     var alias: dynamic /* String | Array<String> */
@@ -141,8 +141,8 @@ external interface F7AsyncResolveParams {
  * Route-level page events (pageInit, pageAfterIn, etc).
  */
 external interface F7RouteEvents {
-    var pageBeforeIn: ((event: dynamic, page: dynamic) -> Unit)?
-    var pageAfterIn: ((event: dynamic, page: dynamic) -> Unit)?
-    var pageInit: ((event: dynamic, page: dynamic) -> Unit)?
-    var pageBeforeRemove: ((event: dynamic, page: dynamic) -> Unit)?
+    var pageBeforeIn: ((event: dynamic, page: dynamic) -> Unit)
+    var pageAfterIn: ((event: dynamic, page: dynamic) -> Unit)
+    var pageInit: ((event: dynamic, page: dynamic) -> Unit)
+    var pageBeforeRemove: ((event: dynamic, page: dynamic) -> Unit)
 }
